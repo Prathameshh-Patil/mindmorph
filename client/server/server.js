@@ -1,31 +1,26 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import mindformRoutes from "./routes/mindformRoutes.js";
 
-
-dotenv.config({ override: true });
+dotenv.config();
 
 const app = express();
 
-const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
-app.use(cors({ origin: clientOrigin }));
+app.use(cors());
+app.use(express.json());
 
-// Doodles can be large base64 strings, increase limit explicitly
-app.use(express.json({ limit: '10mb' }));
+// Health route
+app.get("/", (req, res) => {
+    res.send("Backend running ✅");
+});
 
-// 3. Attach Routes
-app.use("/api/mindforms", mindformRoutes);
-
-// Global Error Handling Middleware
-app.use((err, req, res, next) => {
-    console.error("Global Error:", err.stack);
-    res.status(err.status || 500).json({
-        error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message
-    });
+// Test API
+app.get("/api/mindforms", (req, res) => {
+    res.json([]);
 });
 
 const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log("Server running on", PORT);
 });
